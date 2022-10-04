@@ -74,6 +74,9 @@ bool JointTrajectoryModel::hasJointTrajectorySet(const QString& key)
 
 JointTrajectoryStateItem* findJointStateItem(QStandardItem* item)
 {
+  if (!item)
+    throw std::runtime_error("findJointStateItem passed an invalid QStandardItem*");
+
   if (item->type() == static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET_STATE))
     return dynamic_cast<JointTrajectoryStateItem*>(item);
 
@@ -83,6 +86,9 @@ JointTrajectoryStateItem* findJointStateItem(QStandardItem* item)
 const tesseract_common::JointState& JointTrajectoryModel::getJointState(const QModelIndex& row) const
 {
   QStandardItem* item = itemFromIndex(row);
+
+  if (!item)
+    throw std::runtime_error("Invalid item selected, cannot get joint state");
 
   if (item->type() == static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET_TRAJECTORY))
     throw std::runtime_error("Cannot get joint state from selected joint trajectory standard item");

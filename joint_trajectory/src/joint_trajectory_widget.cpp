@@ -339,15 +339,13 @@ void JointTrajectoryWidget::onCurrentRowChanged(const QModelIndex& current, cons
   onDisablePlayer();
   switch (data_->selected_item->type())
   {
-    case static_cast<int>(StandardItemType::COMMON_NAMESPACE):
-    {
+    case static_cast<int>(StandardItemType::COMMON_NAMESPACE): {
       data_->save_action->setDisabled(true);
       data_->remove_action->setDisabled(true);
       data_->plot_action->setDisabled(true);
       break;
     }
-    case static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET_TRAJECTORY):
-    {
+    case static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET_TRAJECTORY): {
       data_->save_action->setDisabled(true);
       data_->remove_action->setDisabled(true);
       data_->plot_action->setDisabled(false);
@@ -364,8 +362,7 @@ void JointTrajectoryWidget::onCurrentRowChanged(const QModelIndex& current, cons
 
       break;
     }
-    case static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET):
-    {
+    case static_cast<int>(StandardItemType::JOINT_TRAJECTORY_SET): {
       data_->save_action->setDisabled(false);
       data_->remove_action->setDisabled(false);
       data_->plot_action->setDisabled(false);
@@ -388,16 +385,22 @@ void JointTrajectoryWidget::onCurrentRowChanged(const QModelIndex& current, cons
 
       break;
     }
-    default:
-    {
+    default: {
       data_->save_action->setDisabled(true);
       data_->remove_action->setDisabled(true);
       data_->plot_action->setDisabled(true);
 
-      const tesseract_common::JointState& state = data_->model->getJointState(current_index);
-      auto details = data_->model->getJointTrajectorySetDetails(current_index);
-      emit configureJointTrajectorySet(details.first, details.second);
-      emit showJointState(state);
+      try
+      {
+        const tesseract_common::JointState& state = data_->model->getJointState(current_index);
+        auto details = data_->model->getJointTrajectorySetDetails(current_index);
+        emit configureJointTrajectorySet(details.first, details.second);
+        emit showJointState(state);
+      }
+      catch (...)
+      {
+        CONSOLE_BRIDGE_logDebug("JointTrajectoryWidget, getJointState(%i) failed, not updating", current_index);
+      }
       break;
     }
   }

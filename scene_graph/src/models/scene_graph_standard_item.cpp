@@ -162,11 +162,11 @@ void SceneGraphStandardItem::clear()
 {
   data_->name_item[1]->setData("Empty", Qt::DisplayRole);
 
-  for (int i = data_->links_item->rowCount(); i > 0; --i)
-    data_->links_item->removeRow(i);
+  while (data_->links_item->rowCount() > 0)
+    data_->links_item->removeRow(0);
 
-  for (int i = data_->joints_item->rowCount(); i > 0; --i)
-    data_->joints_item->removeRow(i);
+  while (data_->joints_item->rowCount() > 0)
+    data_->joints_item->removeRow(0);
 
   data_->links.clear();
   data_->joints.clear();

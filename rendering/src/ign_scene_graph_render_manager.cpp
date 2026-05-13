@@ -97,7 +97,8 @@ IgnSceneGraphRenderManager::~IgnSceneGraphRenderManager() { data_->clear(); }
 
 void IgnSceneGraphRenderManager::render()
 {
-  if (events_.empty())
+  auto events = takeEvents();
+  if (events.empty())
     return;
 
   gz::rendering::ScenePtr scene = sceneFromFirstRenderEngine(data_->scene_name);
@@ -113,7 +114,7 @@ void IgnSceneGraphRenderManager::render()
     return entity_container;
   };
 
-  for (const auto& event : events_)
+  for (const auto& event : events)
   {
     if (event->type() == events::EventType::SCENE_GRAPH_CLEAR)
     {
@@ -281,7 +282,6 @@ void IgnSceneGraphRenderManager::render()
     }
   }
 
-  events_.clear();
 }
 
 }  // namespace tesseract_gui

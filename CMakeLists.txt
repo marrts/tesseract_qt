@@ -5,6 +5,8 @@ find_package(ros_industrial_cmake_boilerplate REQUIRED)
 extract_package_metadata(pkg)
 project(${pkg_extracted_name} VERSION ${pkg_extracted_version} LANGUAGES C CXX)
 
+include(CTest)
+
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -103,9 +105,11 @@ set(WINDOWS_DEPENDS
 if(${BUILD_RENDERING})
   message("Building rendering module")
   add_subdirectory(rendering)
-  if((EXISTS LSB_RELEASE_CODE_SHORT) AND (LSB_RELEASE_CODE_SHORT STREQUAL "noble"))
+  if(LSB_RELEASE_CODE_SHORT STREQUAL "noble")
+    message("Using Gazebo 8 for rendering")
     set(GZ_RENDERING gz-rendering8)
   else()
+    message("Using Gazebo 7 for rendering")
     set(GZ_RENDERING gz-rendering7)
   endif()
   list(
@@ -133,7 +137,7 @@ if(${BUILD_STUDIO} AND ${BUILD_RENDERING})
   list(APPEND DEPS "qtadvanceddocking NAMES qtadvanceddocking qt5advanceddocking qt6advanceddocking")
   add_subdirectory(studio)
 
-  if((EXISTS LSB_RELEASE_CODE_SHORT) AND (LSB_RELEASE_CODE_SHORT STREQUAL "noble"))
+  if(LSB_RELEASE_CODE_SHORT STREQUAL "noble")
     set(QT_ADS libqt-advanced-docking-system-dev)
   else()
     set(QT_ADS qt-advanced-docking-system)

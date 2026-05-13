@@ -54,6 +54,8 @@ protected:
   std::vector<std::unique_ptr<events::ComponentEvent>> events_;
   std::mutex mutex_;
 
+  std::vector<std::unique_ptr<events::ComponentEvent>> takeEvents();
+
   // Documentation inherited
   bool eventFilter(QObject* obj, QEvent* event) override;
 

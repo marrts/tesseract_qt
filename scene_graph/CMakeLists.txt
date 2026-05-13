@@ -75,6 +75,10 @@ target_include_directories(
 
 add_subdirectory(demo)
 
+if(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
+
 # Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME} DESTINATION include)
 

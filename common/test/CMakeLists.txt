@@ -58,5 +58,6 @@ macro(add_common_unit_test target source)
   endif()
 endmacro()
 
-add_common_unit_test(${PROJECT_NAME}_common_environment_wrapper_unit environment_wrapper_unit.cpp)
+add_common_unit_test(${PROJECT_NAME}_common_environment_wrapper_unit environment_wrapper_unit.cpp
+                     ${PROJECT_NAME}_environment_models)
 add_common_unit_test(${PROJECT_NAME}_common_entity_container_unit entity_container_unit.cpp GTest::Main)

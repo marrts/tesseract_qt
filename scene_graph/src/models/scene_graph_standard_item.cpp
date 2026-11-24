@@ -82,6 +82,8 @@ void SceneGraphStandardItem::setName(const std::string& name)
 
 void SceneGraphStandardItem::addLink(const tesseract_scene_graph::Link& link)
 {
+  removeLink(link.getName());
+
   auto* item = new LinkStandardItem(
       QString::fromStdString(link.getName()), std::make_shared<tesseract_scene_graph::Link>(link.clone()), true);
 
@@ -97,6 +99,8 @@ void SceneGraphStandardItem::addLink(const tesseract_scene_graph::Link& link)
 
 void SceneGraphStandardItem::addJoint(const tesseract_scene_graph::Joint& joint)
 {
+  removeJoint(joint.getName());
+
   auto* item = new JointStandardItem(QString::fromStdString(joint.getName()),
                                      std::make_shared<tesseract_scene_graph::Joint>(joint.clone()));
   data_->joints_item->appendRow(item);
@@ -106,7 +110,12 @@ void SceneGraphStandardItem::addJoint(const tesseract_scene_graph::Joint& joint)
 
 void SceneGraphStandardItem::removeLink(const std::string& link_name)
 {
-  QStandardItem* item = data_->links.at(link_name);
+  // Incremental environment updates may reference rows this model never received
+  auto map_it = data_->links.find(link_name);
+  if (map_it == data_->links.end())
+    return;
+
+  QStandardItem* item = map_it->second;
   for (int i = 0; i < data_->links_item->rowCount(); ++i)
   {
     if (item == data_->links_item->child(i))
@@ -120,7 +129,12 @@ void SceneGraphStandardItem::removeLink(const std::string& link_name)
 
 void SceneGraphStandardItem::removeJoint(const std::string& joint_name)
 {
-  QStandardItem* item = data_->joints.at(joint_name);
+  // Incremental environment updates may reference rows this model never received
+  auto map_it = data_->joints.find(joint_name);
+  if (map_it == data_->joints.end())
+    return;
+
+  QStandardItem* item = map_it->second;
   for (int i = 0; i < data_->joints_item->rowCount(); ++i)
   {
     if (item == data_->joints_item->child(i))

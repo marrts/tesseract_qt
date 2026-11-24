@@ -126,3 +126,37 @@ TEST(SceneGraphStandardItemUnit, MoveLinkReplacesExistingJointForChildLink)
 
   tesseract_gui::ComponentInfoManager::clear();
 }
+TEST(SceneGraphStandardItemUnit, IncrementalEventsTolerateUnknownAndDuplicateNames)
+{
+  auto& app = getApplication();
+  (void)app;
+
+  tesseract_gui::ComponentInfoManager::clear();
+  auto component_info = tesseract_gui::ComponentInfoManager::create("scene_graph_test_scene", "scene_graph_test");
+  ASSERT_NE(component_info, nullptr);
+
+  tesseract_gui::SceneGraphModel model(component_info);
+
+  auto scene_graph = std::make_shared<tesseract_scene_graph::SceneGraph>(makeSceneGraph("first_link", "first_joint"));
+  tesseract_gui::events::SceneGraphSet set_event(component_info, scene_graph);
+  QApplication::sendEvent(qApp, &set_event);
+
+  tesseract_gui::events::SceneGraphRemoveLink remove_unknown_link(component_info, "unknown_link", false);
+  tesseract_gui::events::SceneGraphRemoveJoint remove_unknown_joint(component_info, "unknown_joint", false);
+  EXPECT_NO_THROW(QApplication::sendEvent(qApp, &remove_unknown_link));
+  EXPECT_NO_THROW(QApplication::sendEvent(qApp, &remove_unknown_joint));
+
+  tesseract_gui::events::SceneGraphAddLink add_existing_link(
+      component_info, std::make_shared<tesseract_scene_graph::Link>("first_link"));
+  tesseract_gui::events::SceneGraphAddJoint add_existing_joint(component_info,
+                                                               makeMovedJoint("first_joint", "first_link"));
+  QApplication::sendEvent(qApp, &add_existing_link);
+  QApplication::sendEvent(qApp, &add_existing_joint);
+
+  auto* root_item = model.item(0, 0);
+  ASSERT_NE(root_item, nullptr);
+  EXPECT_EQ(root_item->child(1, 0)->rowCount(), 2);
+  EXPECT_EQ(root_item->child(2, 0)->rowCount(), 1);
+
+  tesseract_gui::ComponentInfoManager::clear();
+}
